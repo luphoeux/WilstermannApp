@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
 import '../widgets/custom_card.dart';
 
@@ -104,8 +104,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
                       color: isCompleted 
-                          ? Colors.green.withOpacity(0.1) 
-                          : Colors.orange.withOpacity(0.1),
+                          ? AppColors.greenLight 
+                          : AppColors.orangeLight,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -128,7 +128,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primaryVeryLight,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -580,7 +580,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primaryVeryLight,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(

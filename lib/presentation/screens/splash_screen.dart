@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import '../../core/constants/colors.dart';
 import '../../core/constants/strings.dart';
 import 'main_screen.dart';
 
@@ -60,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Text(
                 AppStrings.appSlogan,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white.withOpacity(0.9),
+                      color: AppColors.whiteLight,
                     ),
               ),
               

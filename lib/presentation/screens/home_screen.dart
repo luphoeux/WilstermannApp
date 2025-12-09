@@ -4,8 +4,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/colors.dart';
 import '../../core/services/auth_service.dart';
+import '../../core/services/profile_service.dart';
 import '../widgets/custom_card.dart';
-import 'login_screen.dart';
+import 'main_screen.dart';
+import 'all_news_screen.dart';
+import 'news_detail_screen.dart';
+import 'match_detail_screen.dart';
+import 'store_screen.dart';
+import 'fixture_screen.dart';
+import '../../core/utils/team_helper.dart';
+import '../../core/services/data_cache_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,33 +25,86 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _bannerController = PageController();
   final _authService = AuthService();
+  final _profileService = ProfileService();
   int _currentBannerIndex = 0;
   bool _isLoggedIn = false;
   String _userName = '';
+  String _userInitials = 'U';
   Timer? _autoScrollTimer;
   bool _userInteracted = false;
+  Map<String, dynamic>? _nextMatch;
+  bool _isLoadingNextMatch = true;
 
   @override
   void initState() {
     super.initState();
     _checkLoginStatus();
     _startAutoScroll();
+    _loadNextMatchFromCsv();
+  }
+
+  Future<void> _loadNextMatchFromCsv() async {
+    try {
+      final cacheService = DataCacheService();
+      final jsonData =
+          await cacheService.loadJsonData('assets/data/partidos_futuros.json');
+      final List<dynamic> partidos = jsonData['partidos'];
+
+      if (partidos.isNotEmpty) {
+        final partido = partidos.first;
+        setState(() {
+          _nextMatch = {
+            'date': partido['fecha'],
+            'time': partido['hora'],
+            'home': partido['equipoLocal'],
+            'away': partido['equipoVisitante'],
+            'stadium': partido['estadio'],
+            'competition': partido['competicion'],
+            'city': partido['ciudad'],
+          };
+          _isLoadingNextMatch = false;
+        });
+      } else {
+        setState(() => _isLoadingNextMatch = false);
+      }
+    } catch (e) {
+      debugPrint('Error cargando próximo partido: $e');
+      setState(() => _isLoadingNextMatch = false);
+    }
   }
 
   Future<void> _checkLoginStatus() async {
     final loggedIn = await _authService.isLoggedIn();
-    final email = await _authService.getCurrentUserEmail();
+
+    String displayName = '';
+    String initials = 'U';
+
+    if (loggedIn) {
+      // Intentar obtener el nombre del perfil
+      final hasProfile = await _profileService.hasProfile();
+      if (hasProfile) {
+        displayName = await _profileService.getFirstName();
+        initials = await _profileService.getProfileInitials();
+      } else {
+        // Si no hay perfil, usar email como fallback
+        final email = await _authService.getCurrentUserEmail();
+        if (email != null) {
+          displayName = email.split('@').first;
+          // Capitalizar primera letra
+          if (displayName.isNotEmpty) {
+            displayName =
+                displayName[0].toUpperCase() + displayName.substring(1);
+          }
+          initials =
+              displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U';
+        }
+      }
+    }
 
     setState(() {
       _isLoggedIn = loggedIn;
-      // Extraer nombre del email (antes del @)
-      if (email != null) {
-        _userName = email.split('@').first;
-        // Capitalizar primera letra
-        if (_userName.isNotEmpty) {
-          _userName = _userName[0].toUpperCase() + _userName.substring(1);
-        }
-      }
+      _userName = displayName;
+      _userInitials = initials;
     });
   }
 
@@ -95,6 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
             expandedHeight: 80,
             floating: true,
             pinned: false,
+            automaticallyImplyLeading: false,
             backgroundColor: AppColors.primary,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
@@ -113,17 +175,49 @@ class _HomeScreenState extends State<HomeScreen> {
                             // Logo
                             Row(
                               children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  padding: const EdgeInsets.all(6),
-                                  child: SvgPicture.asset(
-                                    'assets/logos/logo svg.svg',
-                                    fit: BoxFit.contain,
+                                GestureDetector(
+                                  onTap: _isLoggedIn
+                                      ? () {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => const MainScreen(
+                                                  initialIndex: 3),
+                                            ),
+                                          );
+                                        }
+                                      : null,
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      border: _isLoggedIn
+                                          ? Border.all(
+                                              color:
+                                                  Colors.white.withOpacity(0.5),
+                                              width: 2)
+                                          : null,
+                                    ),
+                                    padding: _isLoggedIn
+                                        ? EdgeInsets.zero
+                                        : const EdgeInsets.all(6),
+                                    child: _isLoggedIn
+                                        ? Center(
+                                            child: Text(
+                                              _userInitials,
+                                              style: const TextStyle(
+                                                color: AppColors.primary,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                          )
+                                        : SvgPicture.asset(
+                                            'assets/logos/logo svg.svg',
+                                            fit: BoxFit.contain,
+                                          ),
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -163,23 +257,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                       size: 24.0,
                                     ),
                                     onPressed: () {
-                                      // TODO: Navegar a notificaciones
+                                      _showNotificationsSidebar(context);
                                     },
                                   )
-                                : IconButton(
-                                    icon: const HugeIcon(
-                                      icon: HugeIcons.strokeRoundedLogin02,
-                                      color: Colors.white,
-                                      size: 24.0,
-                                    ),
+                                : TextButton(
                                     onPressed: () {
-                                      Navigator.push(
+                                      Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (_) => const LoginScreen(),
+                                          builder: (_) =>
+                                              const MainScreen(initialIndex: 3),
                                         ),
-                                      ).then((_) => _checkLoginStatus());
+                                      );
                                     },
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: AppColors.primary,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 6),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Inicia sesión',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ),
                           ],
                         ),
@@ -222,22 +328,22 @@ class _HomeScreenState extends State<HomeScreen> {
       {
         'image': 'assets/images/banner1.jpg',
         'action': () {
-          // TODO: Acción del banner 1
-          debugPrint('Banner 1 clicked');
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const StoreScreen()));
         },
       },
       {
         'image': 'assets/images/banner2.jpg',
         'action': () {
-          // TODO: Acción del banner 2
-          debugPrint('Banner 2 clicked');
+          Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const AllNewsScreen()));
         },
       },
       {
         'image': 'assets/images/banner3.jpg',
         'action': () {
-          // TODO: Acción del banner 3
-          debugPrint('Banner 3 clicked');
+          Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const FixtureScreen()));
         },
       },
     ];
@@ -282,13 +388,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             errorBuilder: (context, error, stackTrace) {
                               // Placeholder si no existe la imagen
                               return Container(
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   gradient: LinearGradient(
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                     colors: [
                                       AppColors.primary,
-                                      AppColors.primary.withOpacity(0.7),
+                                      AppColors.primaryLight,
                                     ],
                                   ),
                                 ),
@@ -335,6 +441,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNextMatch() {
+    if (_isLoadingNextMatch) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_nextMatch == null) {
+      return const SizedBox.shrink();
+    }
+
+    final match = _nextMatch!;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -348,133 +467,194 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          CustomCard(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                const Text(
-                  'Liga Profesional - Fecha 15',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w500,
-                  ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    // Equipo Local
-                    Expanded(
-                      child: Column(
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => MatchDetailScreen(match: match)));
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      // Competición (Badge)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          match['competition'] as String,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Equipos y Marcador/VS
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.sports_soccer,
-                              color: Colors.white,
-                              size: 35,
+                          // Equipo Local
+                          Expanded(
+                            child: Column(
+                              children: [
+                                _buildTeamLogo(match['home'] as String, 64),
+                                const SizedBox(height: 12),
+                                Text(
+                                  match['home'] as String,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    height: 1.2,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Wilstermann',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+
+                          // VS / Info Central
+                          SizedBox(
+                            width: 80,
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'VS',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    match['time'] as String,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Equipo Visitante
+                          Expanded(
+                            child: Column(
+                              children: [
+                                _buildTeamLogo(match['away'] as String, 64),
+                                const SizedBox(height: 12),
+                                Text(
+                                  match['away'] as String,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    height: 1.2,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    // VS
-                    const Column(
-                      children: [
-                        Text(
-                          'VS',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Dom 15 Dic',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        Text(
-                          '16:00',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // Equipo Visitante
-                    Expanded(
-                      child: Column(
+
+                      const SizedBox(height: 24),
+
+                      // Divider
+                      Divider(color: Colors.grey.shade100, height: 1),
+
+                      const SizedBox(height: 12),
+
+                      // Footer: Fecha y Estadio
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Icon(Icons.calendar_today_outlined,
+                              size: 14, color: Colors.grey.shade500),
+                          const SizedBox(width: 6),
+                          Text(
+                            match['date'] as String,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                           Container(
-                            width: 60,
-                            height: 60,
+                            margin: const EdgeInsets.symmetric(horizontal: 12),
+                            width: 4,
+                            height: 4,
                             decoration: BoxDecoration(
                               color: Colors.grey.shade300,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
-                              Icons.sports_soccer,
-                              color: Colors.grey,
-                              size: 35,
-                            ),
                           ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Rival',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                          Icon(Icons.stadium_outlined,
+                              size: 14, color: Colors.grey.shade500),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              '${match['stadium']}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.stadium, size: 16, color: AppColors.primary),
-                      SizedBox(width: 8),
-                      Text(
-                        'Estadio Félix Capriles',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
-                      ),
                     ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -482,22 +662,74 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildTeamLogo(String teamName, double size) {
+    final isWilstermann = teamName == 'Wilstermann';
+
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: isWilstermann ? AppColors.primary : Colors.grey.shade200,
+          width: isWilstermann ? 3 : 1, // Wilstermann con borde más grueso
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(size * 0.15), // Padding proporcional
+      child: ClipOval(
+        child: Image.asset(
+          TeamHelper.getTeamIcon(teamName),
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return Center(
+              child: Text(
+                teamName.isNotEmpty ? teamName[0] : '?',
+                style: TextStyle(
+                  fontSize: size * 0.4,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey.shade400,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Widget _buildFeaturedNews() {
     final news = [
       {
+        'id': '1',
         'title': 'Wilstermann se prepara para el clásico',
         'date': 'Hace 2 horas',
-        'category': 'Noticias',
+        'image': 'assets/images/news1.jpg',
+        'content':
+            'El equipo aviador intensifica sus entrenamientos de cara al clásico cochabambino del próximo domingo...',
       },
       {
+        'id': '2',
         'title': 'Nuevos refuerzos para la temporada 2026',
         'date': 'Hace 5 horas',
-        'category': 'Fichajes',
+        'image': 'assets/images/news2.jpg',
+        'content':
+            'La directiva del club confirma la llegada de tres nuevos jugadores para reforzar el plantel...',
       },
       {
+        'id': '3',
         'title': 'Entrevista exclusiva con el DT',
         'date': 'Hace 1 día',
-        'category': 'Entrevistas',
+        'image': 'assets/images/news3.jpg',
+        'content':
+            'El director técnico habla sobre los objetivos del equipo para esta temporada...',
       },
     ];
 
@@ -518,7 +750,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  // TODO: Ver todas las noticias
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AllNewsScreen(),
+                    ),
+                  );
                 },
                 child: const Text('Ver todas'),
               ),
@@ -528,18 +765,27 @@ class _HomeScreenState extends State<HomeScreen> {
           ...news.map((item) {
             return CustomCard(
               margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
               onTap: () {
-                // TODO: Navegar a detalle de noticia
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => NewsDetailScreen(news: item),
+                  ),
+                );
               },
               child: Row(
                 children: [
+                  // Imagen sin padding, más grande
                   Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
+                    width: 100,
+                    height: 100,
+                    decoration: const BoxDecoration(
                       gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        bottomLeft: Radius.circular(16),
+                      ),
                     ),
                     child: const Icon(
                       Icons.article,
@@ -547,58 +793,277 @@ class _HomeScreenState extends State<HomeScreen> {
                       size: 40,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  // Contenido con padding
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            item['category']!,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item['title']!,
                             style: const TextStyle(
-                              fontSize: 10,
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            item['date']!,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          item['title']!,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          item['date']!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                  const Icon(
-                    Icons.chevron_right,
-                    color: Colors.grey,
+                  // Icono chevron con padding
+                  const Padding(
+                    padding: EdgeInsets.only(right: 16),
+                    child: Icon(
+                      Icons.chevron_right,
+                      color: Colors.grey,
+                    ),
                   ),
                 ],
               ),
             );
           }),
+        ],
+      ),
+    );
+  }
+
+  void _showNotificationsSidebar(BuildContext context) {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Notificaciones',
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Align(
+          alignment: Alignment.centerRight,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeInOut,
+            )),
+            child: Material(
+              color: Colors.white,
+              child: SafeArea(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.85,
+                  child: Column(
+                    children: [
+                      // Header
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: const BoxDecoration(
+                          gradient: AppColors.primaryGradient,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Notificaciones',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            IconButton(
+                              icon:
+                                  const Icon(Icons.close, color: Colors.white),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Lista de notificaciones
+                      Expanded(
+                        child: ListView(
+                          padding: const EdgeInsets.all(16),
+                          children: [
+                            _buildNotificationItem(
+                              icon: Icons.card_membership,
+                              iconColor: AppColors.primary,
+                              title: 'Membresía Activada',
+                              message:
+                                  'Tu membresía Aviador 2026 ha sido activada exitosamente.',
+                              time: 'Hace 5 min',
+                              isNew: true,
+                            ),
+                            _buildNotificationItem(
+                              icon: Icons.sports_soccer,
+                              iconColor: Colors.green,
+                              title: '⚽ Gol de Wilstermann!',
+                              message:
+                                  'Minuto 23\' - Wilstermann 1-0 Rival. ¡Vamos Aviador!',
+                              time: 'Hace 15 min',
+                              isNew: true,
+                            ),
+                            _buildNotificationItem(
+                              icon: Icons.warning_amber_rounded,
+                              iconColor: Colors.orange,
+                              title: 'Membresía por vencer',
+                              message:
+                                  'Tu membresía vencerá en 7 días. Renueva ahora y no te pierdas ningún partido.',
+                              time: 'Hace 2 horas',
+                              isNew: false,
+                            ),
+                            _buildNotificationItem(
+                              icon: Icons.article,
+                              iconColor: AppColors.secondary,
+                              title: 'Nueva publicación',
+                              message:
+                                  'Wilstermann se prepara para el clásico cochabambino del domingo.',
+                              time: 'Hace 3 horas',
+                              isNew: false,
+                            ),
+                            _buildNotificationItem(
+                              icon: Icons.local_offer,
+                              iconColor: Colors.red,
+                              title: '🎉 Promoción especial',
+                              message:
+                                  '50% de descuento en productos oficiales. Solo por hoy!',
+                              time: 'Hace 5 horas',
+                              isNew: false,
+                            ),
+                            _buildNotificationItem(
+                              icon: Icons.stadium,
+                              iconColor: AppColors.primary,
+                              title: 'Próximo partido',
+                              message:
+                                  'Wilstermann vs Rival - Dom 15 Dic, 16:00 en el Félix Capriles',
+                              time: 'Hace 1 día',
+                              isNew: false,
+                            ),
+                            _buildNotificationItem(
+                              icon: Icons.shopping_bag,
+                              iconColor: Colors.blue,
+                              title: 'Pedido confirmado',
+                              message:
+                                  'Tu pedido #12345 ha sido confirmado y está en camino.',
+                              time: 'Hace 2 días',
+                              isNew: false,
+                            ),
+                            _buildNotificationItem(
+                              icon: Icons.celebration,
+                              iconColor: Colors.purple,
+                              title: '🎂 Día del Aviador',
+                              message:
+                                  'Celebra con nosotros el aniversario del club. Eventos especiales este fin de semana.',
+                              time: 'Hace 3 días',
+                              isNew: false,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildNotificationItem({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String message,
+    required String time,
+    required bool isNew,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isNew ? AppColors.primaryVeryLight : Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color:
+              isNew ? AppColors.primary.withOpacity(0.3) : Colors.grey.shade200,
+          width: 1,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: iconColor,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: isNew ? FontWeight.bold : FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    if (isNew)
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  message,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey.shade700,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  time,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

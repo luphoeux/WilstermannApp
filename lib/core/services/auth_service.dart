@@ -1,10 +1,13 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'profile_service.dart';
 
 /// Servicio de autenticación simple
 class AuthService {
   static const String _keyIsLoggedIn = 'is_logged_in';
   static const String _keyUserEmail = 'user_email';
-  
+
+  final ProfileService _profileService = ProfileService();
+
   // Credenciales hardcodeadas
   static const String adminEmail = 'admin@gmail.com';
   static const String adminPassword = '12345678';
@@ -38,5 +41,8 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyIsLoggedIn);
     await prefs.remove(_keyUserEmail);
+
+    // Limpiar también los datos del perfil
+    await _profileService.clearProfile();
   }
 }

@@ -4,42 +4,79 @@ import '../../core/constants/colors.dart';
 import 'home_screen.dart';
 import 'fixture_screen.dart';
 import 'store_screen.dart';
-import 'payments_screen.dart';
 import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final int initialIndex;
+
+  const MainScreen({super.key, this.initialIndex = 0});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
+  late int _currentIndex;
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const FixtureScreen(),
-    const StoreScreen(),
-    const PaymentsScreen(),
-    const ProfileScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
+
+  Widget _getScreen(int index) {
+    switch (index) {
+      case 0:
+        return const HomeScreen();
+      case 1:
+        return const FixtureScreen();
+      case 2:
+        return const StoreScreen();
+      case 3:
+        return const ProfileScreen();
+      default:
+        return const HomeScreen();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        switchInCurve: Curves.easeInOut,
+        switchOutCurve: Curves.easeInOut,
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          // Fade + Slide transition
+          final offsetAnimation = Tween<Offset>(
+            begin: const Offset(0.05, 0.0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInOut,
+          ));
+
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            ),
+          );
+        },
+        child: KeyedSubtree(
+          key: ValueKey<int>(_currentIndex),
+          child: _getScreen(_currentIndex),
+        ),
       ),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: AppColors.blackMedium,
               blurRadius: 20,
-              offset: const Offset(0, -3),
+              offset: Offset(0, -3),
             ),
           ],
         ),
@@ -52,13 +89,11 @@ class _MainScreenState extends State<MainScreen> {
               children: [
                 _buildNavItem(0, HugeIcons.strokeRoundedHome01,
                     HugeIcons.strokeRoundedHome01, 'Inicio'),
-                _buildNavItem(1, HugeIcons.strokeRoundedFootball,
-                    HugeIcons.strokeRoundedFootball, 'Fixture'),
-                _buildCenterNavItem(
-                    2, HugeIcons.strokeRoundedShoppingBag01, 'Tienda'),
-                _buildNavItem(3, HugeIcons.strokeRoundedInvoice,
-                    HugeIcons.strokeRoundedInvoice, 'Mis Pagos'),
-                _buildNavItem(4, HugeIcons.strokeRoundedUser,
+                _buildNavItem(1, HugeIcons.strokeRoundedCalendarFavorite01,
+                    HugeIcons.strokeRoundedCalendarFavorite01, 'Fixture'),
+                _buildNavItem(2, HugeIcons.strokeRoundedShoppingBag01,
+                    HugeIcons.strokeRoundedShoppingBag01, 'Tienda'),
+                _buildNavItem(3, HugeIcons.strokeRoundedUser,
                     HugeIcons.strokeRoundedUser, 'Cuenta'),
               ],
             ),
@@ -98,39 +133,6 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCenterNavItem(int index, dynamic icon, String label) {
-    final isSelected = _currentIndex == index;
-    return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
-      child: Container(
-        width: 56,
-        height: 56,
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(
-          gradient: isSelected
-              ? AppColors.primaryGradient
-              : LinearGradient(
-                  colors: [Colors.grey.shade400, Colors.grey.shade500],
-                ),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: (isSelected ? AppColors.primary : Colors.grey)
-                  .withOpacity(0.4),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: HugeIcon(
-          icon: icon,
-          color: Colors.white,
-          size: 26.0,
         ),
       ),
     );

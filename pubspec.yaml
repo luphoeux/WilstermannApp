@@ -28,6 +28,9 @@ dependencies:
   # Local Storage
   shared_preferences: ^2.2.2
   
+  # CSV Parser
+  csv: ^6.0.0
+  
   # Loading & Animations
   flutter_spinkit: ^5.2.0
 
@@ -52,9 +55,11 @@ flutter:
   # Assets
   assets:
     - assets/images/
+    - assets/images/equipos/
     - assets/icons/
     - assets/animations/
     - assets/logos/
+    - assets/data/
 
   # Fonts (usando Google Fonts en lugar de archivos locales)
   # fonts:

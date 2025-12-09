@@ -60,28 +60,33 @@ class _CustomButtonState extends State<CustomButton> {
     }
 
     return GestureDetector(
-      onTapDown: widget.isLoading ? null : (_) => setState(() => _isPressed = true),
-      onTapUp: widget.isLoading ? null : (_) {
-        setState(() => _isPressed = false);
-        widget.onPressed();
-      },
-      onTapCancel: widget.isLoading ? null : () => setState(() => _isPressed = false),
+      onTapDown:
+          widget.isLoading ? null : (_) => setState(() => _isPressed = true),
+      onTapUp: widget.isLoading
+          ? null
+          : (_) {
+              setState(() => _isPressed = false);
+              widget.onPressed();
+            },
+      onTapCancel:
+          widget.isLoading ? null : () => setState(() => _isPressed = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         width: widget.width,
         height: widget.height ?? 50,
         decoration: BoxDecoration(
-          gradient: widget.isLoading 
-              ? LinearGradient(colors: [Colors.grey.shade400, Colors.grey.shade500])
+          gradient: widget.isLoading
+              ? LinearGradient(
+                  colors: [Colors.grey.shade400, Colors.grey.shade500])
               : LinearGradient(
-                  colors: [bgColor, bgColor.withOpacity(0.8)],
+                  colors: [bgColor, bgColor],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: (widget.isLoading ? Colors.grey : bgColor).withOpacity(_isPressed ? 0.2 : 0.4),
+              color: _isPressed ? AppColors.blackLight : AppColors.blackMedium,
               blurRadius: _isPressed ? 8 : 12,
               offset: Offset(0, _isPressed ? 2 : 4),
             ),

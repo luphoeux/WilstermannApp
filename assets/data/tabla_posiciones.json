@@ -1,0 +1,149 @@
+{
+  "competicion": "Liga Profesional 2026",
+  "equipos": [
+    {
+      "posicion": 1,
+      "equipo": "Bolívar",
+      "pj": 30,
+      "pg": 20,
+      "pe": 6,
+      "pp": 4,
+      "gf": 58,
+      "gc": 25,
+      "dg": 33,
+      "pts": 66
+    },
+    {
+      "posicion": 2,
+      "equipo": "The Strongest",
+      "pj": 30,
+      "pg": 18,
+      "pe": 8,
+      "pp": 4,
+      "gf": 52,
+      "gc": 28,
+      "dg": 24,
+      "pts": 62
+    },
+    {
+      "posicion": 3,
+      "equipo": "Wilstermann",
+      "pj": 30,
+      "pg": 17,
+      "pe": 7,
+      "pp": 6,
+      "gf": 49,
+      "gc": 30,
+      "dg": 19,
+      "pts": 58
+    },
+    {
+      "posicion": 4,
+      "equipo": "Blooming",
+      "pj": 30,
+      "pg": 15,
+      "pe": 9,
+      "pp": 6,
+      "gf": 45,
+      "gc": 32,
+      "dg": 13,
+      "pts": 54
+    },
+    {
+      "posicion": 5,
+      "equipo": "Aurora",
+      "pj": 30,
+      "pg": 14,
+      "pe": 8,
+      "pp": 8,
+      "gf": 42,
+      "gc": 35,
+      "dg": 7,
+      "pts": 50
+    },
+    {
+      "posicion": 6,
+      "equipo": "San José",
+      "pj": 30,
+      "pg": 12,
+      "pe": 10,
+      "pp": 8,
+      "gf": 38,
+      "gc": 34,
+      "dg": 4,
+      "pts": 46
+    },
+    {
+      "posicion": 7,
+      "equipo": "Nacional Potosí",
+      "pj": 30,
+      "pg": 11,
+      "pe": 9,
+      "pp": 10,
+      "gf": 35,
+      "gc": 36,
+      "dg": -1,
+      "pts": 42
+    },
+    {
+      "posicion": 8,
+      "equipo": "Oriente Petrolero",
+      "pj": 30,
+      "pg": 10,
+      "pe": 8,
+      "pp": 12,
+      "gf": 33,
+      "gc": 38,
+      "dg": -5,
+      "pts": 38
+    },
+    {
+      "posicion": 9,
+      "equipo": "Real Tomayapo",
+      "pj": 30,
+      "pg": 9,
+      "pe": 7,
+      "pp": 14,
+      "gf": 30,
+      "gc": 40,
+      "dg": -10,
+      "pts": 34
+    },
+    {
+      "posicion": 10,
+      "equipo": "Guabirá",
+      "pj": 30,
+      "pg": 8,
+      "pe": 6,
+      "pp": 16,
+      "gf": 28,
+      "gc": 42,
+      "dg": -14,
+      "pts": 30
+    },
+    {
+      "posicion": 11,
+      "equipo": "Universitario",
+      "pj": 30,
+      "pg": 7,
+      "pe": 5,
+      "pp": 18,
+      "gf": 25,
+      "gc": 45,
+      "dg": -20,
+      "pts": 26
+    },
+    {
+      "posicion": 12,
+      "equipo": "Independiente",
+      "pj": 30,
+      "pg": 5,
+      "pe": 7,
+      "pp": 18,
+      "gf": 22,
+      "gc": 48,
+      "dg": -26,
+      "pts": 22
+    }
+  ]
+}

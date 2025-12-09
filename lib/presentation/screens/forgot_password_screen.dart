@@ -161,8 +161,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           Container(
             width: 100,
             height: 100,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+            decoration: const BoxDecoration(
+              color: AppColors.whiteUltraLight,
               shape: BoxShape.circle,
             ),
             child: const HugeIcon(
@@ -186,11 +186,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           const SizedBox(height: 12),
 
           // Subtitle
-          Text(
+          const Text(
             'Ingresa tu correo electrónico y te enviaremos un código de verificación',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: AppColors.whiteLight,
               fontSize: 16,
             ),
           ),
@@ -203,18 +203,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: 'Correo electrónico',
-              labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
+              labelStyle: const TextStyle(color: AppColors.whiteLight),
               prefixIcon: const HugeIcon(
                   icon: HugeIcons.strokeRoundedMail01, color: Colors.white),
               filled: true,
-              fillColor: Colors.white.withOpacity(0.2),
+              fillColor: AppColors.whiteUltraLight,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                borderSide: const BorderSide(color: AppColors.whiteVeryLight),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -297,8 +297,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           Container(
             width: 100,
             height: 100,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+            decoration: const BoxDecoration(
+              color: AppColors.whiteUltraLight,
               shape: BoxShape.circle,
             ),
             child: const HugeIcon(
@@ -325,8 +325,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           Text(
             'Ingresa el código de 6 dígitos que enviamos a ${_emailController.text}',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+            style: const TextStyle(
+              color: AppColors.whiteLight,
               fontSize: 16,
             ),
           ),
@@ -345,16 +345,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
             decoration: InputDecoration(
               labelText: 'Código',
-              labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
+              labelStyle: const TextStyle(color: AppColors.whiteLight),
               filled: true,
-              fillColor: Colors.white.withOpacity(0.2),
+              fillColor: AppColors.whiteUltraLight,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                borderSide: const BorderSide(color: AppColors.whiteVeryLight),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -377,10 +377,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           // Resend code
           TextButton(
             onPressed: _handleSendCode,
-            child: Text(
+            child: const Text(
               '¿No recibiste el código? Reenviar',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
+                color: AppColors.whiteLight,
                 decoration: TextDecoration.underline,
               ),
             ),
@@ -435,8 +435,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           Container(
             width: 100,
             height: 100,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+            decoration: const BoxDecoration(
+              color: AppColors.whiteUltraLight,
               shape: BoxShape.circle,
             ),
             child: const HugeIcon(
@@ -460,11 +460,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           const SizedBox(height: 12),
 
           // Subtitle
-          Text(
+          const Text(
             'Ingresa tu nueva contraseña',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: AppColors.whiteLight,
               fontSize: 16,
             ),
           ),
@@ -477,7 +477,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: 'Nueva contraseña',
-              labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
+              labelStyle: const TextStyle(color: AppColors.whiteLight),
               prefixIcon: const HugeIcon(
                   icon: HugeIcons.strokeRoundedLock, color: Colors.white),
               suffixIcon: IconButton(
@@ -492,14 +492,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 },
               ),
               filled: true,
-              fillColor: Colors.white.withOpacity(0.2),
+              fillColor: AppColors.whiteUltraLight,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                borderSide: const BorderSide(color: AppColors.whiteVeryLight),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -525,7 +525,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: 'Confirmar contraseña',
-              labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
+              labelStyle: const TextStyle(color: AppColors.whiteLight),
               prefixIcon: const HugeIcon(
                   icon: HugeIcons.strokeRoundedLock, color: Colors.white),
               suffixIcon: IconButton(
@@ -541,14 +541,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 },
               ),
               filled: true,
-              fillColor: Colors.white.withOpacity(0.2),
+              fillColor: AppColors.whiteUltraLight,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                borderSide: const BorderSide(color: AppColors.whiteVeryLight),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),

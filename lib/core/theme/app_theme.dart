@@ -24,77 +24,77 @@ class AppTheme {
 
       // Tipografía
       textTheme: TextTheme(
-        displayLarge: GoogleFonts.montserrat(
+        displayLarge: GoogleFonts.inter(
           fontSize: 32,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
         ),
-        displayMedium: GoogleFonts.montserrat(
+        displayMedium: GoogleFonts.inter(
           fontSize: 28,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
         ),
-        displaySmall: GoogleFonts.montserrat(
+        displaySmall: GoogleFonts.inter(
           fontSize: 24,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
         ),
-        headlineLarge: GoogleFonts.montserrat(
+        headlineLarge: GoogleFonts.inter(
           fontSize: 22,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        headlineMedium: GoogleFonts.montserrat(
+        headlineMedium: GoogleFonts.inter(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        headlineSmall: GoogleFonts.montserrat(
+        headlineSmall: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        titleLarge: GoogleFonts.montserrat(
+        titleLarge: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        titleMedium: GoogleFonts.roboto(
+        titleMedium: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
         ),
-        titleSmall: GoogleFonts.roboto(
+        titleSmall: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: AppColors.textSecondary,
         ),
-        bodyLarge: GoogleFonts.roboto(
+        bodyLarge: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.normal,
           color: AppColors.textPrimary,
         ),
-        bodyMedium: GoogleFonts.roboto(
+        bodyMedium: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.normal,
           color: AppColors.textPrimary,
         ),
-        bodySmall: GoogleFonts.roboto(
+        bodySmall: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.normal,
           color: AppColors.textSecondary,
         ),
-        labelLarge: GoogleFonts.roboto(
+        labelLarge: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
         ),
-        labelMedium: GoogleFonts.roboto(
+        labelMedium: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: AppColors.textSecondary,
         ),
-        labelSmall: GoogleFonts.roboto(
+        labelSmall: GoogleFonts.inter(
           fontSize: 10,
           fontWeight: FontWeight.w500,
           color: AppColors.textSecondary,
@@ -107,7 +107,7 @@ class AppTheme {
         foregroundColor: AppColors.textLight,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.montserrat(
+        titleTextStyle: GoogleFonts.inter(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textLight,
@@ -124,7 +124,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.montserrat(
+          textStyle: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -139,7 +139,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.montserrat(
+          textStyle: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -150,7 +150,7 @@ class AppTheme {
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          textStyle: GoogleFonts.montserrat(
+          textStyle: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -183,20 +183,21 @@ class AppTheme {
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        hintStyle: GoogleFonts.roboto(
+        hintStyle: GoogleFonts.inter(
           color: AppColors.textSecondary,
           fontSize: 14,
         ),
       ),
 
       // Card
-      cardTheme: CardTheme(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        color: AppColors.background,
-      ),
+      // Card
+      // cardTheme: CardTheme(
+      //   elevation: 2,
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(16),
+      //   ),
+      //   color: AppColors.background,
+      // ),
 
       // Divider
       dividerTheme: const DividerThemeData(
@@ -210,11 +211,11 @@ class AppTheme {
         backgroundColor: AppColors.background,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textSecondary,
-        selectedLabelStyle: GoogleFonts.roboto(
+        selectedLabelStyle: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
-        unselectedLabelStyle: GoogleFonts.roboto(
+        unselectedLabelStyle: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.normal,
         ),
@@ -233,7 +234,7 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.backgroundLight,
         selectedColor: AppColors.primary,
-        labelStyle: GoogleFonts.roboto(
+        labelStyle: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),

@@ -13,19 +13,38 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _dobController = TextEditingController();
+  final _ciController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  String? _selectedExpedition;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
   bool _acceptTerms = false;
 
+  final List<String> _expeditionOptions = [
+    'Cochabamba',
+    'La Paz',
+    'Santa Cruz',
+    'Oruro',
+    'Potosí',
+    'Chuquisaca',
+    'Tarija',
+    'Beni',
+    'Pando'
+  ];
+
   @override
   void dispose() {
     _nameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
+    _dobController.dispose();
+    _ciController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -62,6 +81,70 @@ class _RegisterScreenState extends State<RegisterScreen> {
     // Navegar al home
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const MainScreen()),
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        _dobController.text = "${picked.day}/${picked.month}/${picked.year}";
+      });
+    }
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required Widget prefixIcon,
+    TextInputType? keyboardType,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: AppColors.whiteLight),
+        prefixIcon: prefixIcon,
+        filled: true,
+        fillColor: AppColors.whiteUltraLight,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.whiteVeryLight),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.white, width: 2),
+        ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Por favor ingresa este campo';
+        }
+        return null;
+      },
     );
   }
 
@@ -104,91 +187,114 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const Text(
                       '¡Únete a la familia aviadora!',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
+                        color: AppColors.whiteLight,
                         fontSize: 16,
                       ),
                     ),
                     const SizedBox(height: 40),
 
                     // Name Field
-                    TextFormField(
+                    _buildTextField(
                       controller: _nameController,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: 'Nombre completo',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.9)),
-                        prefixIcon: const HugeIcon(
-                            icon: HugeIcons.strokeRoundedUser,
-                            color: Colors.white),
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.white.withOpacity(0.3)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              const BorderSide(color: Colors.white, width: 2),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa tu nombre';
-                        }
-                        return null;
-                      },
+                      label: 'Nombre(s)*',
+                      prefixIcon: const HugeIcon(
+                          icon: HugeIcons.strokeRoundedUser,
+                          color: Colors.white),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Last Name Field
+                    _buildTextField(
+                      controller: _lastNameController,
+                      label: 'Apellido(s)*',
+                      prefixIcon: const HugeIcon(
+                          icon: HugeIcons.strokeRoundedUser,
+                          color: Colors.white),
                     ),
                     const SizedBox(height: 16),
 
                     // Email Field
-                    TextFormField(
+                    _buildTextField(
                       controller: _emailController,
+                      label: 'Correo electrónico*',
+                      prefixIcon: const HugeIcon(
+                          icon: HugeIcons.strokeRoundedMail01,
+                          color: Colors.white),
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: 'Correo electrónico',
-                        labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.9)),
-                        prefixIcon: const HugeIcon(
-                            icon: HugeIcons.strokeRoundedMail01,
-                            color: Colors.white),
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.white.withOpacity(0.3)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              const BorderSide(color: Colors.white, width: 2),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Birthday Field
+                    GestureDetector(
+                      onTap: () => _selectDate(context),
+                      child: AbsorbPointer(
+                        child: _buildTextField(
+                          controller: _dobController,
+                          label: 'Fecha de nacimiento*',
+                          prefixIcon: const HugeIcon(
+                              icon: HugeIcons.strokeRoundedCalendar01,
+                              color: Colors.white),
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa tu correo';
-                        }
-                        if (!value.contains('@')) {
-                          return 'Ingresa un correo válido';
-                        }
-                        return null;
-                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // CI and Expedition
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: _buildTextField(
+                            controller: _ciController,
+                            label: 'C.I.*',
+                            prefixIcon: const HugeIcon(
+                                icon: HugeIcons.strokeRoundedCreditCard,
+                                color: Colors.white),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          flex: 2,
+                          child: DropdownButtonFormField<String>(
+                            value: _selectedExpedition,
+                            style: const TextStyle(color: Colors.white),
+                            dropdownColor: AppColors.primary,
+                            decoration: InputDecoration(
+                              labelText: 'Expedición',
+                              labelStyle:
+                                  const TextStyle(color: AppColors.whiteLight),
+                              filled: true,
+                              fillColor: AppColors.whiteUltraLight,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 15), // Reduced vertical padding
+                            ),
+                            icon: const Icon(Icons.arrow_drop_down,
+                                color: Colors.white),
+                            items: _expeditionOptions.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedExpedition = newValue;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
 
@@ -198,9 +304,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       obscureText: _obscurePassword,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        labelText: 'Contraseña',
+                        labelText: 'Contraseña*',
                         labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.9)),
+                            const TextStyle(color: AppColors.whiteLight),
                         prefixIcon: const HugeIcon(
                             icon: HugeIcons.strokeRoundedLock,
                             color: Colors.white),
@@ -217,7 +323,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: AppColors.whiteUltraLight,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -225,7 +331,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide:
-                              BorderSide(color: Colors.white.withOpacity(0.3)),
+                              const BorderSide(color: AppColors.whiteVeryLight),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -234,12 +340,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa tu contraseña';
-                        }
-                        if (value.length < 8) {
-                          return 'La contraseña debe tener al menos 8 caracteres';
-                        }
+                        if (value == null || value.isEmpty) return 'Requerido';
+                        if (value.length < 8) return 'Mínimo 8 caracteres';
                         return null;
                       },
                     ),
@@ -251,9 +353,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       obscureText: _obscureConfirmPassword,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        labelText: 'Confirmar contraseña',
+                        labelText: 'Confirmar contraseña*',
                         labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.9)),
+                            const TextStyle(color: AppColors.whiteLight),
                         prefixIcon: const HugeIcon(
                             icon: HugeIcons.strokeRoundedLock,
                             color: Colors.white),
@@ -270,7 +372,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: AppColors.whiteUltraLight,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -278,7 +380,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide:
-                              BorderSide(color: Colors.white.withOpacity(0.3)),
+                              const BorderSide(color: AppColors.whiteVeryLight),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -287,18 +389,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor confirma tu contraseña';
-                        }
+                        if (value == null || value.isEmpty) return 'Requerido';
                         if (value != _passwordController.text) {
-                          return 'Las contraseñas no coinciden';
+                          return 'No coinciden';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 20),
 
-                    // Terms and Conditions
+                    // Terms
                     Row(
                       children: [
                         Checkbox(
@@ -311,11 +411,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           fillColor: WidgetStateProperty.all(Colors.white),
                           checkColor: AppColors.primary,
                         ),
-                        Expanded(
+                        const Expanded(
                           child: Text(
                             'Acepto los términos y condiciones',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
+                              color: AppColors.whiteLight,
                             ),
                           ),
                         ),
@@ -323,6 +423,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 24),
 
+                    // General Buttons and content...
                     // Register Button
                     SizedBox(
                       height: 50,
@@ -361,10 +462,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           '¿Ya tienes una cuenta? ',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: AppColors.whiteLight,
                           ),
                         ),
                         TextButton(

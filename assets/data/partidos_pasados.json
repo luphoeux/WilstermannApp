@@ -1,0 +1,114 @@
+{
+    "partidos": [
+        {
+            "fecha": "2025-12-07",
+            "hora": "20:00",
+            "equipoLocal": "Guabirá",
+            "equipoVisitante": "Wilstermann",
+            "golesLocal": 6,
+            "golesVisitante": 3,
+            "estadio": "Estadio Gilberto Parada",
+            "competicion": "Liga Profesional",
+            "ciudad": "Montero"
+        },
+        {
+            "fecha": "2025-12-03",
+            "hora": "16:00",
+            "equipoLocal": "Wilstermann",
+            "equipoVisitante": "Real Oruro",
+            "golesLocal": 3,
+            "golesVisitante": 1,
+            "estadio": "Estadio Félix Capriles",
+            "competicion": "Liga Profesional",
+            "ciudad": "Cochabamba"
+        },
+        {
+            "fecha": "2025-11-30",
+            "hora": "19:30",
+            "equipoLocal": "Aurora",
+            "equipoVisitante": "Wilstermann",
+            "golesLocal": 1,
+            "golesVisitante": 0,
+            "estadio": "Estadio Félix Capriles",
+            "competicion": "Liga Profesional",
+            "ciudad": "Cochabamba"
+        },
+        {
+            "fecha": "2025-11-23",
+            "hora": "19:30",
+            "equipoLocal": "Wilstermann",
+            "equipoVisitante": "Oriente Petrolero",
+            "golesLocal": 3,
+            "golesVisitante": 1,
+            "estadio": "Estadio Félix Capriles",
+            "competicion": "Liga Profesional",
+            "ciudad": "Cochabamba"
+        },
+        {
+            "fecha": "2025-11-02",
+            "hora": "18:15",
+            "equipoLocal": "Real Tomayapo",
+            "equipoVisitante": "Wilstermann",
+            "golesLocal": 6,
+            "golesVisitante": 1,
+            "estadio": "Estadio IV Centenario",
+            "competicion": "Liga Profesional",
+            "ciudad": "Tarija"
+        },
+        {
+            "fecha": "2025-09-28",
+            "hora": "19:15",
+            "equipoLocal": "Universitario de Vinto",
+            "equipoVisitante": "Wilstermann",
+            "golesLocal": 1,
+            "golesVisitante": 1,
+            "estadio": "Estadio Félix Capriles",
+            "competicion": "Liga Profesional",
+            "ciudad": "Cochabamba"
+        },
+        {
+            "fecha": "2025-09-25",
+            "hora": "20:30",
+            "equipoLocal": "Wilstermann",
+            "equipoVisitante": "Blooming",
+            "golesLocal": 1,
+            "golesVisitante": 0,
+            "estadio": "Estadio Félix Capriles",
+            "competicion": "Liga Profesional",
+            "ciudad": "Cochabamba"
+        },
+        {
+            "fecha": "2025-09-21",
+            "hora": "19:15",
+            "equipoLocal": "Always Ready",
+            "equipoVisitante": "Wilstermann",
+            "golesLocal": 2,
+            "golesVisitante": 0,
+            "estadio": "Estadio Mun. Villa Ingenio",
+            "competicion": "Liga Profesional",
+            "ciudad": "El Alto"
+        },
+        {
+            "fecha": "2025-09-18",
+            "hora": "20:00",
+            "equipoLocal": "Wilstermann",
+            "equipoVisitante": "Nacional Potosí",
+            "golesLocal": 2,
+            "golesVisitante": 5,
+            "estadio": "Estadio Félix Capriles",
+            "competicion": "Liga Profesional",
+            "ciudad": "Cochabamba"
+        },
+        {
+            "fecha": "2025-09-14",
+            "hora": "17:00",
+            "equipoLocal": "ABB",
+            "equipoVisitante": "Wilstermann",
+            "golesLocal": 0,
+            "golesVisitante": 0,
+            "estadio": "Estadio Hernando Siles",
+            "competicion": "Liga Profesional",
+            "ciudad": "La Paz"
+        }
+    ]
+}

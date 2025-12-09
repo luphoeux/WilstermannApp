@@ -13,7 +13,7 @@ class AppColors {
   static const Color textLight = Color(0xFFFFFFFF); // Blanco
 
   // Colores de fondo
-  static const Color background = Color(0xFFFFFFFF); // Blanco
+  static const Color background = Color(0xFFF6F9F9); // Gris muy claro
   static const Color backgroundLight = Color(0xFFF8F9FA); // Gris muy claro
   static const Color backgroundDark = Color(0xFF2C3E50); // Gris oscuro
 
@@ -42,10 +42,22 @@ class AppColors {
     end: Alignment.bottomRight,
   );
 
-  // Colores con opacidad
-  static Color primaryWithOpacity(double opacity) =>
-      primary.withOpacity(opacity);
-  static Color accentWithOpacity(double opacity) => accent.withOpacity(opacity);
-  static Color whiteWithOpacity(double opacity) =>
-      secondary.withOpacity(opacity);
+  // Colores con opacidad predefinida (usando Color.fromRGBO para evitar withOpacity)
+  static const Color primaryLight = Color.fromRGBO(2, 7, 71, 0.7);
+  static const Color primaryVeryLight = Color.fromRGBO(2, 7, 71, 0.1);
+
+  static const Color accentLight = Color.fromRGBO(255, 8, 6, 0.1);
+
+  static const Color whiteLight = Color.fromRGBO(255, 255, 255, 0.9);
+  static const Color whiteMedium = Color.fromRGBO(255, 255, 255, 0.5);
+  static const Color whiteVeryLight = Color.fromRGBO(255, 255, 255, 0.3);
+  static const Color whiteUltraLight = Color.fromRGBO(255, 255, 255, 0.2);
+
+  static const Color blackLight = Color.fromRGBO(0, 0, 0, 0.2);
+  static const Color blackMedium = Color.fromRGBO(0, 0, 0, 0.08);
+  static const Color blackVeryLight = Color.fromRGBO(0, 0, 0, 0.05);
+
+  static const Color greenLight = Color.fromRGBO(39, 174, 96, 0.1);
+  static const Color orangeLight = Color.fromRGBO(243, 156, 18, 0.1);
+  static const Color redLight = Color.fromRGBO(255, 0, 0, 0.1);
 }

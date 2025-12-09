@@ -8,7 +8,9 @@ import 'forgot_password_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final VoidCallback? onLoginSuccess;
+
+  const LoginScreen({super.key, this.onLoginSuccess});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -50,9 +52,13 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (success) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const MainScreen()),
-      );
+      if (widget.onLoginSuccess != null) {
+        widget.onLoginSuccess!();
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const MainScreen()),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -86,14 +92,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     Container(
                       width: 150,
                       height: 150,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: AppColors.blackLight,
                             blurRadius: 20,
-                            offset: const Offset(0, 10),
+                            offset: Offset(0, 10),
                           ),
                         ],
                       ),
@@ -120,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       '¡Vamos Aviador!',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
+                            color: AppColors.whiteLight,
                           ),
                     ),
                     const SizedBox(height: 48),
@@ -133,9 +139,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: 'Correo electrónico',
                         labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.9)),
+                            const TextStyle(color: AppColors.whiteLight),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: AppColors.whiteUltraLight,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -143,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide:
-                              BorderSide(color: Colors.white.withOpacity(0.3)),
+                              const BorderSide(color: AppColors.whiteVeryLight),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -171,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: 'Contraseña',
                         labelStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.9)),
+                            const TextStyle(color: AppColors.whiteLight),
                         suffixIcon: IconButton(
                           icon: HugeIcon(
                             icon: _obscurePassword
@@ -186,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.2),
+                        fillColor: AppColors.whiteUltraLight,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -194,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide:
-                              BorderSide(color: Colors.white.withOpacity(0.3)),
+                              const BorderSide(color: AppColors.whiteVeryLight),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -269,22 +275,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 24),
 
                     // Divider
-                    Row(
+                    const Row(
                       children: [
-                        Expanded(
-                            child:
-                                Divider(color: Colors.white.withOpacity(0.5))),
+                        Expanded(child: Divider(color: AppColors.whiteMedium)),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             'o',
-                            style:
-                                TextStyle(color: Colors.white.withOpacity(0.9)),
+                            style: TextStyle(color: AppColors.whiteLight),
                           ),
                         ),
-                        Expanded(
-                            child:
-                                Divider(color: Colors.white.withOpacity(0.5))),
+                        Expanded(child: Divider(color: AppColors.whiteMedium)),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -294,11 +295,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 50,
                       child: OutlinedButton(
                         onPressed: () {
-                          // Por ahora navega directo al home
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                                builder: (_) => const MainScreen()),
-                          );
+                          if (widget.onLoginSuccess != null) {
+                            widget.onLoginSuccess!();
+                          } else {
+                            // Por ahora navega directo al home
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (_) => const MainScreen()),
+                            );
+                          }
                         },
                         style: OutlinedButton.styleFrom(
                           backgroundColor: Colors.white,
@@ -311,7 +316,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Google Icon (usando un Container con colores de Google)
                             Container(
                               width: 24,
                               height: 24,
@@ -328,10 +332,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     foreground: Paint()
                                       ..shader = const LinearGradient(
                                         colors: [
-                                          Color(0xFF4285F4), // Azul Google
-                                          Color(0xFFEA4335), // Rojo Google
-                                          Color(0xFFFBBC05), // Amarillo Google
-                                          Color(0xFF34A853), // Verde Google
+                                          Color(0xFF4285F4),
+                                          Color(0xFFEA4335),
+                                          Color(0xFFFBBC05),
+                                          Color(0xFF34A853),
                                         ],
                                       ).createShader(
                                           const Rect.fromLTWH(0, 0, 24, 24)),
@@ -358,10 +362,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           '¿No tienes una cuenta? ',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: AppColors.whiteLight,
                           ),
                         ),
                         TextButton(

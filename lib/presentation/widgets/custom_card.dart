@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/colors.dart';
 
 class CustomCard extends StatefulWidget {
   final Widget child;
@@ -30,11 +31,17 @@ class _CustomCardState extends State<CustomCard> {
   @override
   Widget build(BuildContext context) {
     final borderRadius = widget.borderRadius ?? BorderRadius.circular(16);
-    
+
     return GestureDetector(
-      onTapDown: widget.onTap != null ? (_) => setState(() => _isPressed = true) : null,
-      onTapUp: widget.onTap != null ? (_) => setState(() => _isPressed = false) : null,
-      onTapCancel: widget.onTap != null ? () => setState(() => _isPressed = false) : null,
+      onTapDown: widget.onTap != null
+          ? (_) => setState(() => _isPressed = true)
+          : null,
+      onTapUp: widget.onTap != null
+          ? (_) => setState(() => _isPressed = false)
+          : null,
+      onTapCancel: widget.onTap != null
+          ? () => setState(() => _isPressed = false)
+          : null,
       onTap: widget.onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
@@ -44,7 +51,8 @@ class _CustomCardState extends State<CustomCard> {
           borderRadius: borderRadius,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(_isPressed ? 0.05 : 0.08),
+              color:
+                  _isPressed ? AppColors.blackVeryLight : AppColors.blackMedium,
               blurRadius: _isPressed ? 8 : 12,
               offset: Offset(0, _isPressed ? 2 : 4),
             ),
