@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
+
 import '../../../core/constants/colors.dart';
 
 class RegisterProfileModal extends StatefulWidget {

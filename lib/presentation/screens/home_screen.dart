@@ -223,21 +223,21 @@ class _HomeScreenState extends State<HomeScreen> {
         'image': 'assets/images/banner1.jpg',
         'action': () {
           // TODO: Acción del banner 1
-          print('Banner 1 clicked');
+          debugPrint('Banner 1 clicked');
         },
       },
       {
         'image': 'assets/images/banner2.jpg',
         'action': () {
           // TODO: Acción del banner 2
-          print('Banner 2 clicked');
+          debugPrint('Banner 2 clicked');
         },
       },
       {
         'image': 'assets/images/banner3.jpg',
         'action': () {
           // TODO: Acción del banner 3
-          print('Banner 3 clicked');
+          debugPrint('Banner 3 clicked');
         },
       },
     ];
