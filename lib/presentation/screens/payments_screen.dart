@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
 import '../widgets/custom_card.dart';
+import 'purchase/purchase_detail_screen.dart';
 
 class PaymentsScreen extends StatefulWidget {
   const PaymentsScreen({super.key});
@@ -9,7 +10,8 @@ class PaymentsScreen extends StatefulWidget {
   State<PaymentsScreen> createState() => _PaymentsScreenState();
 }
 
-class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProviderStateMixin {
+class _PaymentsScreenState extends State<PaymentsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -59,13 +61,21 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
       10,
       (index) => {
         'id': 'PAY-${1000 + index}',
-        'type': index % 3 == 0 ? 'Entrada' : index % 3 == 1 ? 'Membresía' : 'Producto',
-        'description': index % 3 == 0 
+        'type': index % 3 == 0
+            ? 'Entrada'
+            : index % 3 == 1
+                ? 'Membresía'
+                : 'Producto',
+        'description': index % 3 == 0
             ? 'Entrada - Wilstermann vs Rival ${index + 1}'
-            : index % 3 == 1 
+            : index % 3 == 1
                 ? 'Membresía Aviador Premium'
                 : 'Camiseta Titular 2026',
-        'amount': index % 3 == 0 ? 'Bs. 80' : index % 3 == 1 ? 'Bs. 500' : 'Bs. 350',
+        'amount': index % 3 == 0
+            ? 'Bs. 80'
+            : index % 3 == 1
+                ? 'Bs. 500'
+                : 'Bs. 350',
         'date': '${15 - index} Nov 2025',
         'status': index % 4 == 0 ? 'Pendiente' : 'Completado',
         'method': index % 2 == 0 ? 'Tarjeta' : 'QR',
@@ -101,10 +111,11 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isCompleted 
-                          ? AppColors.greenLight 
+                      color: isCompleted
+                          ? AppColors.greenLight
                           : AppColors.orangeLight,
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -205,8 +216,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                       Row(
                         children: [
                           Icon(
-                            payment['method'] == 'Tarjeta' 
-                                ? Icons.credit_card 
+                            payment['method'] == 'Tarjeta'
+                                ? Icons.credit_card
                                 : Icons.qr_code,
                             size: 14,
                             color: Colors.grey.shade600,
@@ -288,7 +299,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
                             color: isValid ? Colors.green : Colors.grey,
                             borderRadius: BorderRadius.circular(12),
@@ -307,7 +319,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.calendar_today, color: Colors.white70, size: 14),
+                        const Icon(Icons.calendar_today,
+                            color: Colors.white70, size: 14),
                         const SizedBox(width: 4),
                         Text(
                           '${ticket['date']} - ${ticket['time']}',
@@ -327,13 +340,17 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    _buildTicketRow(Icons.stadium, 'Estadio', ticket['stadium'] as String),
+                    _buildTicketRow(
+                        Icons.stadium, 'Estadio', ticket['stadium'] as String),
                     const SizedBox(height: 12),
-                    _buildTicketRow(Icons.event_seat, 'Ubicación', ticket['section'] as String),
+                    _buildTicketRow(Icons.event_seat, 'Ubicación',
+                        ticket['section'] as String),
                     const SizedBox(height: 12),
-                    _buildTicketRow(Icons.chair, 'Asiento', ticket['seat'] as String),
+                    _buildTicketRow(
+                        Icons.chair, 'Asiento', ticket['seat'] as String),
                     const SizedBox(height: 12),
-                    _buildTicketRow(Icons.confirmation_number, 'Cantidad', '${ticket['quantity']} entrada(s)'),
+                    _buildTicketRow(Icons.confirmation_number, 'Cantidad',
+                        '${ticket['quantity']} entrada(s)'),
                     const SizedBox(height: 16),
 
                     // QR Code
@@ -377,9 +394,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () {
-                              // TODO: Descargar ticket
-                            },
+                            onPressed: () {},
                             icon: const Icon(Icons.download, size: 18),
                             label: const Text('Descargar'),
                             style: OutlinedButton.styleFrom(
@@ -391,9 +406,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                         const SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {
-                              // TODO: Compartir ticket
-                            },
+                            onPressed: () {},
                             icon: const Icon(Icons.share, size: 18),
                             label: const Text('Compartir'),
                             style: ElevatedButton.styleFrom(
@@ -422,7 +435,11 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
         'startDate': '01 Ene 2025',
         'endDate': '31 Dic 2025',
         'price': 'Bs. 500',
-        'benefits': ['Descuentos en tienda', 'Acceso prioritario', 'Eventos exclusivos'],
+        'benefits': [
+          'Descuentos en tienda',
+          'Acceso prioritario',
+          'Eventos exclusivos'
+        ],
       },
       {
         'name': 'Socio Aviador Básico',
@@ -450,8 +467,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: isActive 
-                      ? AppColors.primaryGradient 
+                  gradient: isActive
+                      ? AppColors.primaryGradient
                       : LinearGradient(
                           colors: [Colors.grey.shade400, Colors.grey.shade600],
                         ),
@@ -462,7 +479,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.card_membership, color: Colors.white, size: 40),
+                    const Icon(Icons.card_membership,
+                        color: Colors.white, size: 40),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
@@ -478,7 +496,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                           ),
                           const SizedBox(height: 4),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: isActive ? Colors.green : Colors.grey,
                               borderRadius: BorderRadius.circular(12),
@@ -564,7 +583,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                         padding: const EdgeInsets.only(bottom: 6),
                         child: Row(
                           children: [
-                            const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                            const Icon(Icons.check_circle,
+                                color: Colors.green, size: 16),
                             const SizedBox(width: 8),
                             Text(
                               benefit,
@@ -611,7 +631,20 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            // TODO: Renovar membresía
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => PurchaseDetailScreen(
+                                  abono: {
+                                    'title': membership['name'],
+                                    'price': membership['price'],
+                                    'description':
+                                        'Renovación de membresía ${membership['name']}',
+                                    // Add other necessary fields if required by PurchaseDetailScreen
+                                  },
+                                ),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
@@ -716,7 +749,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> with SingleTickerProvid
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () {
-                        // TODO: Descargar recibo
+                        //Descargar recibo
                       },
                       icon: const Icon(Icons.download),
                       label: const Text('Descargar Recibo'),

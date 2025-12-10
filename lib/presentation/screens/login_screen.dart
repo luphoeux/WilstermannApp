@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/colors.dart';
 import '../../core/services/auth_service.dart';
 import 'main_screen.dart';
@@ -90,8 +91,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     // Logo
                     Container(
-                      width: 150,
-                      height: 150,
+                      width: 75,
+                      height: 75,
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -103,13 +104,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ],
                       ),
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(10),
                       child: SvgPicture.asset(
                         'assets/logos/logo svg.svg',
                         fit: BoxFit.contain,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 20),
 
                     // Título
                     const Text(
@@ -121,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       '¡Vamos Aviador!',
                       textAlign: TextAlign.center,
@@ -129,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: AppColors.whiteLight,
                           ),
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 32),
 
                     // Email Field
                     TextFormField(
@@ -218,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
                     // Olvidé mi contraseña (centrado)
                     Center(
@@ -240,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
                     // Login Button
                     ElevatedButton(
@@ -272,7 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
                     // Divider
                     const Row(
@@ -288,18 +289,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         Expanded(child: Divider(color: AppColors.whiteMedium)),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
                     // Google Sign In Button
                     SizedBox(
                       height: 50,
                       child: OutlinedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          // Capture navigator before async gap
+                          final navigator = Navigator.of(context);
+
+                          // Simular login con Google guardando el estado
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('is_logged_in', true);
+                          await prefs.setString(
+                              'user_email', 'google_user@gmail.com');
+
+                          if (!mounted) return;
+
                           if (widget.onLoginSuccess != null) {
                             widget.onLoginSuccess!();
                           } else {
-                            // Por ahora navega directo al home
-                            Navigator.of(context).pushReplacement(
+                            navigator.pushReplacement(
                               MaterialPageRoute(
                                   builder: (_) => const MainScreen()),
                             );
@@ -356,7 +367,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
                     // Register Link
                     Row(

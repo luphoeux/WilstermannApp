@@ -24,50 +24,17 @@ class _MainScreenState extends State<MainScreen> {
     _currentIndex = widget.initialIndex;
   }
 
-  Widget _getScreen(int index) {
-    switch (index) {
-      case 0:
-        return const HomeScreen();
-      case 1:
-        return const FixtureScreen();
-      case 2:
-        return const StoreScreen();
-      case 3:
-        return const ProfileScreen();
-      default:
-        return const HomeScreen();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        switchInCurve: Curves.easeInOut,
-        switchOutCurve: Curves.easeInOut,
-        transitionBuilder: (Widget child, Animation<double> animation) {
-          // Fade + Slide transition
-          final offsetAnimation = Tween<Offset>(
-            begin: const Offset(0.05, 0.0),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeInOut,
-          ));
-
-          return FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position: offsetAnimation,
-              child: child,
-            ),
-          );
-        },
-        child: KeyedSubtree(
-          key: ValueKey<int>(_currentIndex),
-          child: _getScreen(_currentIndex),
-        ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: const [
+          HomeScreen(),
+          FixtureScreen(),
+          StoreScreen(),
+          ProfileScreen(),
+        ],
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(

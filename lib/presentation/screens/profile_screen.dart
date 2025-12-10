@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/colors.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/profile_service.dart';
@@ -7,6 +8,7 @@ import 'payments_screen.dart';
 import 'login_screen.dart';
 import 'add_profile_screen.dart';
 import 'edit_profile_screen.dart';
+import 'terms_and_conditions_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -19,7 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
   final ProfileService _profileService = ProfileService();
   bool _isLoggedIn = false;
-  String _userName = '';
+
   String _currentProfile = ''; // Perfil actual seleccionado
   String _currentInitials = 'U'; // Iniciales del perfil
 
@@ -31,7 +33,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _checkLoginStatus() async {
     final isLoggedIn = await _authService.isLoggedIn();
-    final userEmail = await _authService.getCurrentUserEmail();
 
     // Cargar el perfil actual
     final hasProfile = await _profileService.hasProfile();
@@ -50,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     setState(() {
       _isLoggedIn = isLoggedIn;
-      _userName = userEmail ?? '';
+
       _currentProfile = profileName;
       _currentInitials = initials;
     });
@@ -206,6 +207,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
 
           const SizedBox(height: 12),
+
+          // Términos y condiciones
+          _buildMenuItem(
+            icon: Icons.description_outlined,
+            title: 'Términos y condiciones',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const TermsAndConditionsScreen(),
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 24),
+
+          // Contacto
+          _buildContactCard(),
+
+          const SizedBox(height: 16),
+
+          // Redes Sociales
+          _buildSocialMediaCard(),
+
+          const SizedBox(height: 24),
 
           // Cerrar sesión
           _buildMenuItem(
@@ -383,6 +410,167 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildContactCard() {
+    return CustomCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'CONTACTO',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildContactItem(
+            Icons.phone,
+            'Celular',
+            '69777799',
+            () async {
+              final uri = Uri.parse('tel:69777799');
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri);
+              }
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildContactItem(
+            Icons.phone,
+            'WhatsApp',
+            '69777799',
+            () async {
+              final uri = Uri.parse('https://wa.me/59169777799');
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
+              }
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildContactItem(
+            Icons.email,
+            'E-mail',
+            'soporte@todotix.com',
+            () async {
+              final uri = Uri.parse('mailto:soporte@todotix.com');
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContactItem(
+    IconData icon,
+    String label,
+    String value,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.primary, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.chevron_right, color: Colors.grey.shade400, size: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSocialMediaCard() {
+    return CustomCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'REDES SOCIALES',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildSocialMediaItem(
+            Icons.facebook,
+            'Facebook',
+            'https://www.facebook.com/WilstermannClubDeportivo/',
+          ),
+          const SizedBox(height: 12),
+          _buildSocialMediaItem(
+            Icons.close, // X icon (Twitter)
+            'Twitter',
+            'https://x.com/WilstermannCD',
+          ),
+          const SizedBox(height: 12),
+          _buildSocialMediaItem(
+            Icons.camera_alt, // Instagram icon
+            'Instagram',
+            'https://www.instagram.com/clubdeportivojorgewilstermann',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSocialMediaItem(IconData icon, String label, String url) {
+    return InkWell(
+      onTap: () async {
+        final uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        }
+      },
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.primary, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Icon(Icons.open_in_new, color: Colors.grey.shade400, size: 18),
+        ],
+      ),
+    );
+  }
+
   void _showLogoutDialog() {
     showDialog(
       context: context,
@@ -398,11 +586,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ElevatedButton(
               onPressed: () async {
                 await _authService.logout();
-                if (mounted) {
+                if (context.mounted) {
                   Navigator.pop(context);
-                  setState(() {
-                    _isLoggedIn = false;
-                  });
+
+                  // Redirigir al LoginScreen y eliminar el historial
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    (route) => false,
+                  );
                 }
               },
               style: ElevatedButton.styleFrom(

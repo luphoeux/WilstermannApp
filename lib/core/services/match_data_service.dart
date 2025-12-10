@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:csv/csv.dart';
+import 'package:wilstermann_app/core/utils/logger.dart';
 
 class MatchDataService {
   // Cargar partidos futuros
@@ -25,8 +26,8 @@ class MatchDataService {
         }
         return match;
       }).toList();
-    } catch (e) {
-      print('Error loading upcoming matches: $e');
+    } catch (e, stackTrace) {
+      Logger.error('Error loading upcoming matches', e, stackTrace);
       return [];
     }
   }
@@ -51,8 +52,8 @@ class MatchDataService {
         }
         return match;
       }).toList();
-    } catch (e) {
-      print('Error loading past matches: $e');
+    } catch (e, stackTrace) {
+      Logger.error('Error loading past matches', e, stackTrace);
       return [];
     }
   }
@@ -77,8 +78,8 @@ class MatchDataService {
         }
         return standing;
       }).toList();
-    } catch (e) {
-      print('Error loading standings: $e');
+    } catch (e, stackTrace) {
+      Logger.error('Error loading standings', e, stackTrace);
       return [];
     }
   }

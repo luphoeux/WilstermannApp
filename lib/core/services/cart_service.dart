@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/cart_item.dart';
 
-/// Servicio para gestionar el carrito de compras
+/// Servicio para gestionar el carrito de compras con soporte para compras en curso
 class CartService {
   static const String _cartKey = 'shopping_cart';
 

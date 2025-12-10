@@ -3,6 +3,7 @@ import '../../../core/constants/colors.dart';
 import '../../widgets/custom_card.dart';
 import 'register_profile_modal.dart';
 import 'payment_selection_screen.dart';
+import 'seat_selector_screen.dart';
 
 class PurchaseDetailScreen extends StatefulWidget {
   final Map<String, dynamic> abono;
@@ -19,6 +20,10 @@ class _PurchaseDetailScreenState extends State<PurchaseDetailScreen> {
   final List<String> _profiles = ['Luis Perez']; // Ejemplo
   bool _acceptTerms = false;
 
+  // Asiento seleccionado (solo para Preferencia Numerada)
+  String? _selectedRow;
+  int? _selectedSeat;
+
   // Controladores
   final _discountController = TextEditingController();
 
@@ -26,8 +31,16 @@ class _PurchaseDetailScreenState extends State<PurchaseDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Completar Compra'),
-        backgroundColor: AppColors.primary,
+        title: const Text(
+          'Completar Compra',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.black),
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -152,6 +165,12 @@ class _PurchaseDetailScreenState extends State<PurchaseDetailScreen> {
                   const SizedBox(height: 12),
                   _buildReadOnlyField('Sucursal de recepción*',
                       'Sede Wilstermann - Calle Ecuador'),
+
+                  // Selector de asiento (solo para Preferencia Numerada)
+                  if (widget.abono['title'] == 'Preferencia Numerada') ...[
+                    const SizedBox(height: 12),
+                    _buildSeatSelectorField(),
+                  ],
 
                   const SizedBox(height: 8),
                   Row(
@@ -374,6 +393,90 @@ class _PurchaseDetailScreenState extends State<PurchaseDetailScreen> {
                   style: const TextStyle(fontSize: 13, color: Colors.black87)),
               const Icon(Icons.arrow_drop_down, color: Colors.grey, size: 20),
             ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSeatSelectorField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Seleccionar asiento*',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 6),
+        InkWell(
+          onTap: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const SeatSelectorScreen(),
+              ),
+            );
+
+            if (result != null && result is Map<String, dynamic>) {
+              setState(() {
+                _selectedRow = result['row'];
+                _selectedSeat = result['seat'];
+              });
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: _selectedRow != null && _selectedSeat != null
+                    ? AppColors.primary
+                    : Colors.grey.shade300,
+                width: _selectedRow != null && _selectedSeat != null ? 2 : 1,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _selectedRow != null && _selectedSeat != null
+                    ? Row(
+                        children: [
+                          const Icon(
+                            Icons.event_seat,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Fila $_selectedRow - Asiento $_selectedSeat',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Text(
+                        'Toca para seleccionar tu asiento',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                Icon(
+                  Icons.chevron_right,
+                  color: Colors.grey.shade400,
+                  size: 20,
+                ),
+              ],
+            ),
           ),
         ),
       ],

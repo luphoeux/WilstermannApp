@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/colors.dart';
@@ -41,6 +42,13 @@ class _HomeScreenState extends State<HomeScreen> {
     _checkLoginStatus();
     _startAutoScroll();
     _loadNextMatchFromCsv();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Small delay to ensure smooth transition
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) _showPromotionPopup();
+      });
+    });
   }
 
   Future<void> _loadNextMatchFromCsv() async {
@@ -528,6 +536,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     height: 1.2,
+                                    color: AppColors.primary,
                                   ),
                                   textAlign: TextAlign.center,
                                   maxLines: 2,
@@ -543,25 +552,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Column(
                               children: [
                                 Container(
-                                  width: 36,
-                                  height: 36,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      'VS',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w900,
-                                        color: Colors.grey.shade400,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
@@ -575,6 +565,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'VS',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
                                   ),
                                 ),
                               ],
@@ -593,6 +592,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     height: 1.2,
+                                    color: AppColors.primary,
                                   ),
                                   textAlign: TextAlign.center,
                                   maxLines: 2,
@@ -664,43 +664,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildTeamLogo(String teamName, double size) {
     final isWilstermann = teamName == 'Wilstermann';
+    final double displaySize = isWilstermann ? size * 1.1 : size;
 
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: isWilstermann ? AppColors.primary : Colors.grey.shade200,
-          width: isWilstermann ? 3 : 1, // Wilstermann con borde más grueso
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      padding: EdgeInsets.all(size * 0.15), // Padding proporcional
-      child: ClipOval(
-        child: Image.asset(
-          TeamHelper.getTeamIcon(teamName),
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            return Center(
-              child: Text(
-                teamName.isNotEmpty ? teamName[0] : '?',
-                style: TextStyle(
-                  fontSize: size * 0.4,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade400,
-                ),
+    return SizedBox(
+      width: displaySize,
+      height: displaySize,
+      child: Image.asset(
+        TeamHelper.getTeamIcon(teamName),
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return Center(
+            child: Text(
+              teamName.isNotEmpty ? teamName[0] : '?',
+              style: TextStyle(
+                fontSize: displaySize * 0.4,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade400,
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -856,9 +839,9 @@ class _HomeScreenState extends State<HomeScreen> {
               parent: animation,
               curve: Curves.easeInOut,
             )),
-            child: Material(
-              color: Colors.white,
-              child: SafeArea(
+            child: SafeArea(
+              child: Material(
+                color: Colors.white,
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.85,
                   child: Column(
@@ -922,7 +905,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             _buildNotificationItem(
                               icon: Icons.article,
-                              iconColor: AppColors.secondary,
+                              iconColor: Colors.blue.shade700,
                               title: 'Nueva publicación',
                               message:
                                   'Wilstermann se prepara para el clásico cochabambino del domingo.',
@@ -1066,6 +1049,183 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _showPromotionPopup() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastShown = prefs.getInt('promotion_popup_last_shown');
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    // Show popup only if it hasn't been shown in the last hour (3600000 ms)
+    if (lastShown != null && (now - lastShown) < 3600000) {
+      return;
+    }
+
+    // Save current time
+    await prefs.setInt('promotion_popup_last_shown', now);
+
+    if (!mounted) return;
+
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Promoción',
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 500),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Center(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Stack(
+                      children: [
+                        // Imagen/Header del popup
+                        Container(
+                          height: 180,
+                          decoration: const BoxDecoration(
+                            gradient: AppColors.primaryGradient,
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.local_offer_outlined,
+                                  size: 60,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(height: 12),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: const Text(
+                                    '¡OFERTA ESPECIAL!',
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Botón cerrar
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: IconButton(
+                            icon: const Icon(Icons.close, color: Colors.white),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          const Text(
+                            '2x1 en Abonos 2026',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            '¡No te pierdas esta oportunidad única! Compra tu abono para la temporada 2026 y llévate el segundo totalmente GRATIS.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.black87,
+                              height: 1.4,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const StoreScreen()),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 4,
+                              ),
+                              child: const Text(
+                                '¡QUIERO APROVECHAR!',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              'Quizás más tarde',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        );
+
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, -1),
+            end: Offset.zero,
+          ).animate(curvedAnimation),
+          child: child,
+        );
+      },
     );
   }
 }

@@ -11,8 +11,16 @@ class PaymentSelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Finalizar Compra'),
-        backgroundColor: AppColors.primary,
+        title: const Text(
+          'Finalizar Compra',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.black),
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -132,30 +140,60 @@ class PaymentSelectionScreen extends StatelessWidget {
     );
   }
 
-  void _showSuccessDialog(BuildContext context) {
+  void _showSuccessDialog(BuildContext context) async {
+    // Si necesitas realizar alguna limpieza, hazlo aquí.
+
+    if (!context.mounted) return;
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         title: const Column(
           children: [
             Icon(Icons.check_circle, color: Colors.green, size: 60),
             SizedBox(height: 16),
-            Text('¡Orden Generada!'),
+            Text(
+              '¡Orden Generada!',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
         content: const Text(
           'Serás redirigido a la pasarela de pagos para completar tu transacción.',
           textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 15),
         ),
         actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Close dialog
-              Navigator.pop(context); // Close Payment Screen
-              Navigator.pop(context); // Close Detail Screen (Return to Store)
-            },
-            child: const Text('Entendido'),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                Navigator.pop(context); // Close Payment Screen
+                Navigator.pop(context); // Close Detail Screen (Return to Store)
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Entendido',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
         ],
       ),

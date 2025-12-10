@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/constants/colors.dart';
 
 class NewsDetailScreen extends StatelessWidget {
@@ -135,40 +136,38 @@ class NewsDetailScreen extends StatelessWidget {
 
                   const SizedBox(height: 40),
 
-                  // Botones de compartir
+                  // Botón de compartir
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Compartir',
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          final title = news['title'] ?? 'Sin título';
+                          final content = news['content'] ?? '';
+                          Share.share(
+                            '$title\n\n$content\n\n¡Vamos Aviador! 🔴⚪',
+                            subject: title,
+                          );
+                        },
+                        icon: const Icon(Icons.share, size: 20),
+                        label: const Text(
+                          'Compartir noticia',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            _buildShareButton(
-                              icon: Icons.share,
-                              label: 'Compartir',
-                              onTap: () {
-                                // TODO: Implementar compartir
-                              },
-                            ),
-                            const SizedBox(width: 12),
-                            _buildShareButton(
-                              icon: Icons.bookmark_border,
-                              label: 'Guardar',
-                              onTap: () {
-                                // TODO: Implementar guardar
-                              },
-                            ),
-                          ],
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
                         ),
-                      ],
+                      ),
                     ),
                   ),
 
@@ -178,41 +177,6 @@ class NewsDetailScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildShareButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.primary, width: 2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: AppColors.primary, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

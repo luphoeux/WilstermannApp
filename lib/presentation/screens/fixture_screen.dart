@@ -29,7 +29,7 @@ class _FixtureScreenState extends State<FixtureScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     _loadMatchesFromCsv();
     _loadPastMatchesFromCsv();
     _loadStandingsFromCsv();
@@ -152,18 +152,18 @@ class _FixtureScreenState extends State<FixtureScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           tabs: const [
+            Tab(text: 'Tabla'),
             Tab(text: 'Próximos'),
             Tab(text: 'Resultados'),
-            Tab(text: 'Tabla'),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
+          _buildStandings(),
           _buildUpcomingMatches(),
           _buildResults(),
-          _buildStandings(),
         ],
       ),
     );
@@ -245,6 +245,7 @@ class _FixtureScreenState extends State<FixtureScreen>
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                   height: 1.2,
+                                  color: AppColors.primary,
                                 ),
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
@@ -260,25 +261,6 @@ class _FixtureScreenState extends State<FixtureScreen>
                           child: Column(
                             children: [
                               Container(
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'VS',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w900,
-                                      color: Colors.grey.shade400,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
@@ -292,6 +274,15 @@ class _FixtureScreenState extends State<FixtureScreen>
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'VS',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
                                 ),
                               ),
                             ],
@@ -310,6 +301,7 @@ class _FixtureScreenState extends State<FixtureScreen>
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                   height: 1.2,
+                                  color: AppColors.primary,
                                 ),
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
@@ -380,43 +372,26 @@ class _FixtureScreenState extends State<FixtureScreen>
 
   Widget _buildTeamLogo(String teamName, double size) {
     final isWilstermann = teamName == 'Wilstermann';
+    final double displaySize = isWilstermann ? size * 1.1 : size;
 
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: isWilstermann ? AppColors.primary : Colors.grey.shade200,
-          width: isWilstermann ? 3 : 1, // Wilstermann con borde más grueso
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      padding: EdgeInsets.all(size * 0.15), // Padding proporcional
-      child: ClipOval(
-        child: Image.asset(
-          TeamHelper.getTeamIcon(teamName),
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            return Center(
-              child: Text(
-                teamName.isNotEmpty ? teamName[0] : '?',
-                style: TextStyle(
-                  fontSize: size * 0.4,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade400,
-                ),
+    return SizedBox(
+      width: displaySize,
+      height: displaySize,
+      child: Image.asset(
+        TeamHelper.getTeamIcon(teamName),
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return Center(
+            child: Text(
+              teamName.isNotEmpty ? teamName[0] : '?',
+              style: TextStyle(
+                fontSize: displaySize * 0.4,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade400,
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -444,7 +419,7 @@ class _FixtureScreenState extends State<FixtureScreen>
         final awayScore = int.tryParse(match['awayScore'].toString()) ?? 0;
 
         String resultText = 'Empate';
-        Color resultColor = Colors.grey;
+        Color resultColor = Colors.grey.shade700;
         Color resultBgColor = Colors.grey.shade100;
 
         if (isHome) {
@@ -454,8 +429,8 @@ class _FixtureScreenState extends State<FixtureScreen>
             resultBgColor = Colors.green.shade50;
           } else if (homeScore < awayScore) {
             resultText = 'Derrota';
-            resultColor = Colors.red;
-            resultBgColor = Colors.red.shade50;
+            resultColor = Colors.grey.shade700;
+            resultBgColor = Colors.grey.shade100;
           }
         } else if (isAway) {
           if (awayScore > homeScore) {
@@ -464,8 +439,8 @@ class _FixtureScreenState extends State<FixtureScreen>
             resultBgColor = Colors.green.shade50;
           } else if (awayScore < homeScore) {
             resultText = 'Derrota';
-            resultColor = Colors.red;
-            resultBgColor = Colors.red.shade50;
+            resultColor = Colors.grey.shade700;
+            resultBgColor = Colors.grey.shade100;
           }
         }
 
@@ -802,7 +777,7 @@ class _FixtureScreenState extends State<FixtureScreen>
                           color: (team['dg'] as int) > 0
                               ? Colors.green.shade700
                               : (team['dg'] as int) < 0
-                                  ? Colors.red.shade700
+                                  ? const Color.fromARGB(255, 39, 39, 39)
                                   : null,
                         ),
                         _buildDataCell(

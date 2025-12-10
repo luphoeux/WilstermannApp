@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
+import '../../core/utils/team_helper.dart';
 import '../widgets/custom_card.dart';
 
 class MatchDetailScreen extends StatelessWidget {
@@ -23,9 +24,18 @@ class MatchDetailScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(competition),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        title: Text(
+          competition,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black, // Explicitly black
+          ),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 0,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -43,18 +53,22 @@ class MatchDetailScreen extends StatelessWidget {
                       Expanded(
                         child: Column(
                           children: [
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                shape: BoxShape.circle,
+                            SizedBox(
+                              width: home == 'Wilstermann' ? 88.0 : 80.0,
+                              height: home == 'Wilstermann' ? 88.0 : 80.0,
+                              child: Image.asset(
+                                TeamHelper.getTeamIcon(home),
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(
+                                    Icons.shield,
+                                    color: Colors.grey,
+                                    size: 40,
+                                  );
+                                },
                               ),
-                              child:
-                                  const Icon(Icons.shield, color: Colors.grey),
-                              // TODO: Use team logos
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 12),
                             Text(
                               home,
                               textAlign: TextAlign.center,
@@ -87,6 +101,7 @@ class MatchDetailScreen extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.primary,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                             if (!isPlayed)
                               const Text(
@@ -94,7 +109,7 @@ class MatchDetailScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
+                                  color: AppColors.primary,
                                 ),
                               ),
                           ],
@@ -105,17 +120,22 @@ class MatchDetailScreen extends StatelessWidget {
                       Expanded(
                         child: Column(
                           children: [
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                shape: BoxShape.circle,
+                            SizedBox(
+                              width: away == 'Wilstermann' ? 88.0 : 80.0,
+                              height: away == 'Wilstermann' ? 88.0 : 80.0,
+                              child: Image.asset(
+                                TeamHelper.getTeamIcon(away),
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(
+                                    Icons.shield,
+                                    color: Colors.grey,
+                                    size: 40,
+                                  );
+                                },
                               ),
-                              child:
-                                  const Icon(Icons.shield, color: Colors.grey),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 12),
                             Text(
                               away,
                               textAlign: TextAlign.center,
@@ -151,6 +171,8 @@ class MatchDetailScreen extends StatelessWidget {
               _buildStatBar('Posesión', 0.6, '60%', '40%'),
               _buildStatBar('Remates', 0.7, '12', '5'),
               _buildStatBar('Faltas', 0.4, '8', '12'),
+              const SizedBox(height: 24),
+              _buildMinuteByMinute(),
             ] else ...[
               const Center(
                 child: Text(
@@ -226,6 +248,139 @@ class MatchDetailScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMinuteByMinute() {
+    final events = [
+      {'time': '90+4\'', 'title': 'Final del partido', 'type': 'whistle'},
+      {
+        'time': '88\'',
+        'title': '¡Gol de Wilstermann!',
+        'description': 'Rodrigo Amaral marca el 6-3 definitivo.',
+        'type': 'goal'
+      },
+      {
+        'time': '75\'',
+        'title': 'Tarjeta Amarilla',
+        'description': 'Falta táctica en medio campo.',
+        'type': 'card'
+      },
+      {
+        'time': '60\'',
+        'title': 'Cambio en Wilstermann',
+        'description': 'Sale Pochi Chavez, entra Rudy Cardozo.',
+        'type': 'sub'
+      },
+      {'time': '45\'', 'title': 'Inicio del segundo tiempo', 'type': 'whistle'},
+      {'time': '12\'', 'title': 'Gol de Guabirá', 'type': 'goal_against'},
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Minuto a Minuto',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: events.length,
+          itemBuilder: (context, index) {
+            final event = events[index];
+            final isLast = index == events.length - 1;
+
+            IconData icon;
+            Color iconColor;
+            switch (event['type']) {
+              case 'goal':
+                icon = Icons.sports_soccer;
+                iconColor = AppColors.primary;
+                break;
+              case 'goal_against':
+                icon = Icons.sports_soccer;
+                iconColor = Colors.red;
+                break;
+              case 'card':
+                icon = Icons.style;
+                iconColor = Colors.amber;
+                break;
+              case 'sub':
+                icon = Icons.compare_arrows;
+                iconColor = Colors.blue;
+                break;
+              case 'whistle':
+              default:
+                icon = Icons.sports;
+                iconColor = Colors.grey;
+                break;
+            }
+
+            return IntrinsicHeight(
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 50,
+                    child: Column(
+                      children: [
+                        Text(
+                          event['time'] as String,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        if (!isLast)
+                          Expanded(
+                            child: Container(
+                              width: 2,
+                              color: Colors.grey.shade200,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(icon, size: 20, color: iconColor),
+                            const SizedBox(width: 8),
+                            Text(
+                              event['title'] as String,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                        if (event.containsKey('description')) ...[
+                          const SizedBox(height: 4),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 28),
+                            child: Text(
+                              event['description'] as String,
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
